@@ -1,7 +1,9 @@
 const express = require('express')
 const app = express()
 
-const notes = [
+app.use(express.json())
+
+let persons = [
     { 
       "id": 1,
       "name": "Arto Hellas", 
@@ -24,18 +26,68 @@ const notes = [
     }
 ]
 
+const generateId = () => {
+  const maxId = persons.length > 0
+    ? Math.max(...persons.map(n => n.id))
+    : 0
+  return maxId + 1
+}
+
 app.get('/', function (req, res) {
     res.send("Hello, world")
 })
 
 app.get('/api/persons', function (req, res) {
-    res.json(notes)
+    res.json(persons)
+})
+
+app.get('/api/persons/:id', function (req, res) {
+  const id = Number(req.params.id)
+  const person = persons.filter(person => person.id === id)
+  if (person.length !== 0) {
+    res.json(person)
+  } else {
+    res.status(404).end()
+  }
 })
 
 app.get('/info', function (req, res) {
-    const numPeople = `<p>Phonebook has info for ${notes.length} people</p>`
+    const numPeople = `<p>Phonebook has info for ${persons.length} people</p>`
     const time = `<p>${new Date()}</p>`
     res.send(numPeople + time)
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id)
+  persons = persons.filter(person => person.id !== id)
+  res.status(204).end()
+})
+
+app.post('/api/persons', (req, res) => {
+  const body = req.body
+
+  console.log(body)
+
+  if (!body.name || !body.name) {
+    return res.status(400).json({ 
+      error: 'content missing' 
+    })
+  }
+
+  if (persons.map(person => person.name).some(name => name === body.name)) {
+    return res.status(400).json({ 
+      error: 'Name must be unique' 
+    })
+  }
+
+  const person = {
+    id: generateId(),
+    name: body.name,
+    number: body.number
+  }
+
+  persons = persons.concat(person)
+  res.json(person)
 })
   
 const PORT = 3001
