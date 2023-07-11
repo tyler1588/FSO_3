@@ -79,12 +79,11 @@ const App = () => {
             setNewName('')
             setNewNumber('')
           })
-          .catch(response => {
-            setNotification({message: `Information for ${newName} has already been removed from the server`, color: "red"})
+          .catch(error => {
+            setNotification({message: error.response.data.error, color: "red"})
             setTimeout(() => {
               setNotification({message: null, color: null})
             }, 5000)
-            setPersons(persons.filter(person => person.id !== personToUpdate.id))
           })
       }
     } else {
@@ -102,8 +101,8 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
-      .catch(response => {
-        setNotification({message: `Failed to add person`, color: "red"})
+      .catch(error => {
+        setNotification({message: error.response.data.error, color: "red"})
         setTimeout(() => {
           setNotification({message: null, color: null})
         }, 5000)
