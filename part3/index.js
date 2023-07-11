@@ -11,7 +11,7 @@ app.use(express.static('build'))
 const Person = require('./models/person')
 
 app.get('/', function (req, res) {
-    res.send("Hello, world")
+  res.send('Hello, world')
 })
 
 app.get('/api/persons', function (req, res, next) {
@@ -35,11 +35,11 @@ app.get('/api/persons/:id', function (req, res, next) {
 })
 
 app.get('/info', function (req, res, next) {
-    const time = `<p>${new Date()}</p>`
-    Person.find({})
-      .then(persons => 
-        res.send(`<p>Phonebook has info for ${persons.length} people</p>` + time))
-      .catch(error => next(error))
+  const time = `<p>${new Date()}</p>`
+  Person.find({})
+    .then(persons =>
+      res.send(`<p>Phonebook has info for ${persons.length} people</p>` + time))
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
@@ -50,7 +50,7 @@ app.put('/api/persons/:id', (req, res, next) => {
     number: body.number
   }
 
-  Person.findByIdAndUpdate(req.params.id, person, {new: true, runValidators: true})
+  Person.findByIdAndUpdate(req.params.id, person, { new: true, runValidators: true })
     .then(updatedPerson => {
       res.json(updatedPerson)
     })
@@ -59,9 +59,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then(result => {
-      res.status(204).end()
-    })
+    .then(res.status(204).end())
     .catch(error => next(error))
 })
 
@@ -69,8 +67,8 @@ app.post('/api/persons', (req, res, next) => {
   const body = req.body
 
   if (!body.name || !body.name) {
-    return res.status(400).json({ 
-      error: 'content missing' 
+    return res.status(400).json({
+      error: 'content missing'
     })
   }
 
@@ -99,7 +97,7 @@ morgan.token('body', req => {
 const errorHandler = (error, req, res, next) => {
   console.error(error.message)
 
-  if (error.name === 'CastError') { 
+  if (error.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
     return res.status(400).json({ error: error.message })
